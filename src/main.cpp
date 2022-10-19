@@ -1,13 +1,13 @@
-#include "common.h"
-#include "hittable_list.h"
-#include "sphere.h"
+#include "../include/camera.h"
+#include "../include/color.h"
+#include "../include/common.h"
+#include "../include/hittable.h"
+#include "../include/hittable_list.h"
+#include "../include/material.h"
+#include "../include/ray.h"
+#include "../include/sphere.h"
+#include "../include/vec3.h"
 #include <iostream>
-#include "camera.h"
-#include "color.h"
-#include "vec3.h"
-#include "ray.h"
-#include "hittable.h"
-#include "material.h"
 
 double hit_sphere(const point3& center, double radius, const ray& r) {
     vec3 oc = r.origin() - center;
