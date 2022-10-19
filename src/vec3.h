@@ -52,6 +52,12 @@ class vec3 {
         inline static vec3 random(double min, double max) {
             return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
         }
+
+        bool near_zero() const {
+            const auto s = 1e-8;
+            return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+        }
+
     public: 
         double e[3];
     };
@@ -121,5 +127,9 @@ vec3 random_in_hemisphere(const vec3& normal) {
     if (dot(in_unit_sphere, normal) > 0.0)
         return in_unit_sphere;
     return -in_unit_sphere;
+}
+
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v-2*dot(v,n)*n;
 }
 #endif
