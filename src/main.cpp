@@ -72,6 +72,17 @@ hittable_list generate_world_2() {
     return world;
 }
 
+hittable_list generate_cam_world_1() {
+    auto R = cos(pi / 4);
+    hittable_list world;
+    auto material_left = make_shared<lambertian>(color(0, 0, 1));
+    auto material_right = make_shared<lambertian>(color(1, 0, 0));
+
+    world.add(make_shared<sphere>(point3(-R, 0, -1), R, material_left));
+    world.add(make_shared<sphere>(point3(R, 0, -1), R, material_right));
+    return world;
+}
+
 int main(int argc, char **argv) {
     // Image
     const auto aspect_ratio = 16.0 / 9.0;
@@ -84,10 +95,10 @@ int main(int argc, char **argv) {
     const int max_depth = 50;
 
     // World
-    hittable_list world = generate_world_2();
+    hittable_list world = generate_cam_world_1();
 
     // Camera
-    camera cam;
+    camera cam(90.0, aspect_ratio);
 
     // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
