@@ -31,7 +31,7 @@ class lambertian : public material {
 
 class metal : public material {
   public:
-    metal(const color &a) : albedo(a) {}
+    metal(const color &a, double f) : albedo(a), fuzz(f < 1 ? f : 1){}
 
     virtual bool scatter(const ray &ray_in, const hit_record &rec,
                          color &attenuation, ray &scattered) const override {
@@ -43,6 +43,7 @@ class metal : public material {
 
   public:
     color albedo;
+    double fuzz;
 };
 
 class dielectric : public material {
@@ -55,14 +56,30 @@ class dielectric : public material {
         double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
 
         vec3 unit_direction = unit_vector(r_in.direction());
-        vec3 refracted = refract(unit_direction, rec.normal, refraction_ratio);
+        double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
+        double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
 
-        scattered = ray(rec.p, refracted);
+        bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+        vec3 direction;
+
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > random_double())
+            direction = reflect(unit_direction, rec.normal);
+        else
+            direction = refract(unit_direction, rec.normal, refraction_ratio);
+
+        scattered = ray(rec.p, direction);
         return true;
     }
 
   public:
     double ir; // Index of Refraction
+  private:
+    static double reflectance(double cosine, double ref_idx) {
+        auto r0 = (1-ref_idx) / (1+ref_idx);
+        r0 = r0*r0;
+        return r0 + (1-r0)*pow((1 - cosine),5);
+    }
+
 };
 
 #endif
